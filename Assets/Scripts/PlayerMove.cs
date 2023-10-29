@@ -43,15 +43,17 @@ public class PlayerMove : MonoBehaviour
     }
 
     private void  Update() {
+    
        Move();
        Jump();
        Crouch();
        Dashse();
-
        if (isDashing)
         {
             return;
         }
+
+       
     }
     private void Move (){
         float horizontalinput = Input.GetAxis("Horizontal");
@@ -156,6 +158,11 @@ public class PlayerMove : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             StartCoroutine(Dash());
+        }
+
+          if (isDashing)
+        {
+            return;
         }
     }
 
