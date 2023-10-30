@@ -35,6 +35,7 @@ public class PlayerControl : MonoBehaviour
     // private bool ledgeDetected;
     private bool isDashing;
     private bool knockback;
+    private bool crouchPressed;
 
 
     [SerializeField]
@@ -48,8 +49,10 @@ public class PlayerControl : MonoBehaviour
 
 
     public float movementSpeed = 10.0f;
+    public float crouchSpeed = 0.36f;
     public float jumpForce = 16.0f;
     public float groundCheckRadius;
+    public float overheadCheckRadius;
     // public float wallCheckDistance;
     // public float wallSlideSpeed;
     // public float movementForceInAir;
@@ -66,8 +69,10 @@ public class PlayerControl : MonoBehaviour
     public float dashCoolDown;
 
      public Transform groundCheck;
+     public Transform overheadCheck;
 
     public LayerMask whatIsGround;
+    public Collider2D standingCollider,crouchingCollider;
 
 
 
@@ -91,6 +96,7 @@ public class PlayerControl : MonoBehaviour
         // CheckLedgeClimb();
         // CheckDash();
         // CheckKnockback();
+        
     }
     
     private void FixedUpdate() 
@@ -123,6 +129,7 @@ public class PlayerControl : MonoBehaviour
      private void CheckSurroundings()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+
     }
 
      private void CheckIfCanJump()
@@ -169,6 +176,7 @@ public class PlayerControl : MonoBehaviour
         anim.SetBool("isWalking", isWalking);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetFloat("yVelocity", rb.velocity.y);
+        // anim.SetBool("Crouch", crouchPressed);
         // anim.SetBool("isWallSliding", isWallSliding);
     }
 
@@ -211,6 +219,20 @@ public class PlayerControl : MonoBehaviour
         //     if(Time.time >= (lastDash + dashCoolDown))
         //     AttemptToDash();
         // }
+
+        //If we press Crouch button enable crouch 
+        if (Input.GetButtonDown("Crouch")){
+            crouchPressed = true;
+            Crouch();
+            
+        }
+           
+        //Otherwise disable it
+        else if (Input.GetButtonUp("Crouch")){
+            crouchPressed = false;
+            Crouch();
+            
+        }
 
     }
 
@@ -307,9 +329,44 @@ private void CheckJump()
         }
     }
 
+    private void Crouch()
+    {
+        
+        standingCollider.enabled = !crouchPressed;
+        crouchingCollider.enabled = crouchPressed;
+        if(crouchPressed){
+            movementSpeed *= crouchSpeed;
+        }
+        else{
+            movementSpeed /= crouchSpeed;
+             if(Physics2D.OverlapCircle(overheadCheck.position,overheadCheckRadius,whatIsGround)){
+                crouchPressed = true;
+            }
+        }
+        
+        
+    }
+
+    // private void CheckCrouch(bool Crouche){
+    //     if(!crouchPress)
+    //     {
+    //         if(Physics2D.OverlapCircle(overheadCheck.position,overheadCheckRadius,whatIsGround)){
+    //             crouchPressed = true;
+    //         }
+    //         else{
+    //             crouchPressed = false;
+    //             Crouch(crouchPressed);
+    //             // movementSpeed /= crouchSpeed;
+    //         }
+    //     }
+    // }
+
+    
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        Gizmos.DrawWireSphere(overheadCheck.position, overheadCheckRadius);
 
         // Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y, wallCheck.position.z));
     }
