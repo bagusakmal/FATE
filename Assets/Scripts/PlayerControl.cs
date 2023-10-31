@@ -34,6 +34,9 @@ public class PlayerControl : MonoBehaviour
     // private bool canClimbLedge = false;
     // private bool ledgeDetected;
     private bool isDashing;
+    private bool isCrouch;
+    private bool isCrouching = false;
+    private bool hasObstacleAbove = false;
     private bool knockback;
     private bool crouchPressed;
 
@@ -129,6 +132,16 @@ public class PlayerControl : MonoBehaviour
      private void CheckSurroundings()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+        isCrouch = Physics2D.OverlapCircle(overheadCheck.position,overheadCheckRadius,whatIsGround);
+
+        if (isCrouch)
+        {
+            hasObstacleAbove = true; // Jika ada obstacle, atur hasObstacleAbove ke true
+        }
+        else
+        {
+            hasObstacleAbove = false;
+        }
 
     }
 
@@ -222,15 +235,16 @@ public class PlayerControl : MonoBehaviour
 
         //If we press Crouch button enable crouch 
         if (Input.GetButtonDown("Crouch")){
-            crouchPressed = true;
-            Crouch();
+            CrouchDown();
             
         }
            
         //Otherwise disable it
         else if (Input.GetButtonUp("Crouch")){
-            crouchPressed = false;
-            Crouch();
+            if (!hasObstacleAbove)
+            {
+                CrouchUp();
+            }
             
         }
 
@@ -329,39 +343,30 @@ private void CheckJump()
         }
     }
 
-    private void Crouch()
+    private void CrouchDown()
     {
-        
-        standingCollider.enabled = !crouchPressed;
-        crouchingCollider.enabled = crouchPressed;
-        if(crouchPressed){
-            movementSpeed *= crouchSpeed;
-        }
-        else{
-            movementSpeed /= crouchSpeed;
-             if(Physics2D.OverlapCircle(overheadCheck.position,overheadCheckRadius,whatIsGround)){
-                crouchPressed = true;
-            }
-        }
+        if (!isCrouching) // Cek apakah karakter belum dalam kondisi crouching
+    {
+        isCrouching = true; // Atur karakter dalam kondisi crouching
+        crouchingCollider.enabled = true;
+        standingCollider.enabled = false;
+        movementSpeed *= crouchSpeed;
+    }
         
         
     }
 
-    // private void CheckCrouch(bool Crouche){
-    //     if(!crouchPress)
-    //     {
-    //         if(Physics2D.OverlapCircle(overheadCheck.position,overheadCheckRadius,whatIsGround)){
-    //             crouchPressed = true;
-    //         }
-    //         else{
-    //             crouchPressed = false;
-    //             Crouch(crouchPressed);
-    //             // movementSpeed /= crouchSpeed;
-    //         }
-    //     }
-    // }
+    private void CrouchUp(){
 
-    
+       if (isCrouching)
+    {
+            isCrouching = false; // Atur karakter kembali ke posisi berdiri
+            crouchingCollider.enabled = false;
+            standingCollider.enabled = true;
+            movementSpeed /= crouchSpeed;
+    }
+    }
+
 
     private void OnDrawGizmos()
     {
