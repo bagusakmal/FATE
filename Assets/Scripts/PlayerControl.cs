@@ -97,7 +97,7 @@ public class PlayerControl : MonoBehaviour
         // CheckIfWallSliding();
         CheckJump();
         // CheckLedgeClimb();
-        // CheckDash();
+        CheckDash();
         // CheckKnockback();
         
     }
@@ -227,11 +227,11 @@ public class PlayerControl : MonoBehaviour
         //     rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * variableJumpHeightMultiplier);
         // }
 
-        // if (Input.GetButtonDown("Dash"))
-        // {
-        //     if(Time.time >= (lastDash + dashCoolDown))
-        //     AttemptToDash();
-        // }
+        if (Input.GetButtonDown("Dash"))
+        {
+            if(Time.time >= (lastDash + dashCoolDown))
+            AttemptToDash();
+        }
 
         //If we press Crouch button enable crouch 
         if (Input.GetButtonDown("Crouch")){
@@ -256,7 +256,7 @@ public class PlayerControl : MonoBehaviour
         dashTimeLeft = dashTime;
         lastDash = Time.time;
 
-        // PlayerAfterImagePool.Instance.GetFromPool();
+        PlayerAfterImagePool.Instance.GetFromPool();
         lastImageXpos = transform.position.x;
     }
 
@@ -278,7 +278,7 @@ public class PlayerControl : MonoBehaviour
 
                 if (Mathf.Abs(transform.position.x - lastImageXpos) > distanceBetweenImages)
                 {
-                    // PlayerAfterImagePool.Instance.GetFromPool();
+                    PlayerAfterImagePool.Instance.GetFromPool();
                     lastImageXpos = transform.position.x;
                 }
             }
